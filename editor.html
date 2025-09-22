@@ -2,104 +2,82 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Редактор постів</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f4f6f9;
+      background: #f5f5f5;
       margin: 0;
       padding: 20px;
     }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
     h2 {
-      text-align: center;
       color: #333;
     }
     textarea {
       width: 100%;
       height: 200px;
       padding: 10px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      resize: vertical;
       font-size: 16px;
-    }
-    .buttons {
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-between;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: none;
     }
     button {
-      flex: 1;
-      margin: 0 5px;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
+      display: block;
+      width: 100%;
+      margin-top: 15px;
+      padding: 12px;
       font-size: 16px;
+      background-color: #0088cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s;
     }
-    .save {
-      background: #4caf50;
-      color: white;
+    button:hover {
+      background-color: #006699;
     }
-    .send {
-      background: #2196f3;
-      color: white;
-    }
-    .save:hover { background: #45a049; }
-    .send:hover { background: #1976d2; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Редактор постів</h2>
-    <textarea id="post" placeholder="Напиши свій пост тут..."></textarea>
-    <div class="buttons">
-      <button class="save" onclick="savePost()">💾 Зберегти</button>
-      <button class="send" onclick="sendPost()">📤 Відправити</button>
-    </div>
-  </div>
+  <h2>Редактор твого поста</h2>
+  <textarea id="postInput" placeholder="Введи або відредагуй свій текст тут..."></textarea>
+  <button onclick="savePost()">💾 Зберегти</button>
+  <button onclick="sendPost()">📤 Відправити</button>
 
   <script>
-    // При першому заході завантажуємо збережений текст
-    window.onload = function() {
-      const saved = localStorage.getItem("post");
-      if (saved) {
-        document.getElementById("post").value = saved;
-      } else {
-        document.getElementById("post").value = "✍️ Тут ти можеш створити свій перший пост!";
+    let tg = window.Telegram.WebApp;
+
+    // При відкритті — завантажуємо останній збережений текст, якщо він є
+    window.onload = () => {
+      const savedPost = localStorage.getItem("user_post");
+      if (savedPost) {
+        document.getElementById("postInput").value = savedPost;
       }
     };
 
-    // Зберегти пост в localStorage
+    // Збереження поста локально
     function savePost() {
-      const text = document.getElementById("post").value;
-      localStorage.setItem("post", text);
+      const post = document.getElementById("postInput").value;
+      localStorage.setItem("user_post", post);
       alert("✅ Пост збережено!");
     }
 
-    // Відправити пост у Telegram бота
+    // Відправка поста у Telegram Bot
     function sendPost() {
-      const text = document.getElementById("post").value;
-
-      // Тут вставимо виклик Telegram WebApp API
-      if (window.Telegram && window.Telegram.WebApp) {
-        window.Telegram.WebApp.sendData(text);
-      } else {
-        alert("ℹ️ Це демо-версія. Підключи WebApp до Telegram бота!");
+      const post = document.getElementById("postInput").value;
+      if (post.trim() === "") {
+        alert("⚠️ Введи текст перед відправкою!");
+        return;
       }
+      tg.sendData(post); // Надсилаємо текст у бот
+      tg.close();        // Закриваємо WebApp
     }
   </script>
 </body>
 </html>
+
+      
 
  
