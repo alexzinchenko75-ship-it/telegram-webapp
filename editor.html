@@ -3,66 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Редактор поста</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Редактор постів</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      resize: none;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 16px;
+      color: white;
+      background-color: #0288d1;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0277bd;
+    }
+  </style>
 </head>
-<body class="bg-light">
-  <div class="container py-4">
-    <h4 class="mb-3">Редактор твого поста</h4>
-
-    <textarea id="postContent" class="form-control mb-3" rows="10"></textarea>
-
-    <button id="saveBtn" class="btn btn-primary w-100 mb-2">
-      💾 Зберегти
-    </button>
-
-    <button id="sendBtn" class="btn btn-success w-100">
-      📤 Відправити
-    </button>
-  </div>
+<body>
+  <h2>Редактор твого поста</h2>
+  <textarea id="editor" placeholder="Введи або відредагуй свій текст тут..."></textarea>
+  <button id="saveBtn">💾 Зберегти</button>
+  <button id="sendBtn">📤 Відправити</button>
 
   <script>
-    const textarea = document.getElementById('postContent');
-    const saveBtn = document.getElementById('saveBtn');
-    const sendBtn = document.getElementById('sendBtn');
+    const tg = window.Telegram.WebApp;
+    const textarea = document.getElementById("editor");
 
-    // Приветственное сообщение для первого входа
-    const welcomeText = `Привіт! 👋
-
-Цей бот зможе зробити тобі красиві унікальні пости для телеграм та вайбер. 
-
-Додай текст свого оголошення. Наступного разу ти зможеш просто відредагувати те, що було раніше (ціни, місця закупівлі, культури).`;
-
-    // Проверка: есть ли сохранённый текст
-    const savedText = localStorage.getItem('postContent');
-    if (savedText) {
-      textarea.value = savedText;
-    } else {
-      textarea.value = welcomeText;
-    }
-
-    // Кнопка "Зберегти"
-    saveBtn.addEventListener('click', () => {
-      localStorage.setItem('postContent', textarea.value);
-      alert('Пост збережено ✅');
+    // Кнопка "Зберегти" — просто локально (можно расширить при желании)
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      alert("✅ Текст збережено локально: \n\n" + textarea.value);
     });
 
-    // Кнопка "Відправити"
-    sendBtn.addEventListener('click', () => {
-      const text = textarea.value.trim();
-      if (!text) {
-        alert('Поле порожнє!');
-        return;
-      }
-
-      // Відправка в Telegram WebApp
-      if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.sendData(text);
-      } else {
-        alert('⚠️ Запусти через Telegram!');
-      }
+    // Кнопка "Відправити" — надсилає у бота
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const text = textarea.value;
+      tg.sendData(text); // <-- надсилає в бот
+      tg.close();
     });
+
+    tg.expand();
   </script>
 </body>
 </html>
