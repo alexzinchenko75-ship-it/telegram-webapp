@@ -1,62 +1,68 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Редактор поста</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 18px; color:#111; }
-    h2 { text-align:center; margin: 8px 0 12px; }
-    textarea { width:100%; height:240px; padding:10px; font-size:15px; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
-    .btn { margin-top:12px; display:block; width:100%; padding:12px; font-size:16px; border:none; border-radius:8px; cursor:pointer; background:#1e88e5; color:white; }
-    .btn-secondary { background:#6c757d; }
-    .note { margin-top:8px; font-size:13px; color:#444; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Редактор поста</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            resize: none;
+        }
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background: #2ea44f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #248c3c;
+        }
+    </style>
 </head>
 <body>
-  <h2>✍️ Редактор поста</h2>
+    <h2>Мой красивый пост для Telegram</h2>
+    <textarea id="postInput" placeholder="Вставь или напиши свой текст здесь..."></textarea>
+    <button id="saveBtn">💾 Сохранить</button>
 
-  <textarea id="postText" placeholder="Введіть текст вашого оголошення..."></textarea>
-  <button id="saveBtn" class="btn">✅ Зберегти та надіслати</button>
-  <div class="note">Після збереження WebApp автоматично закриється і бот отримає текст.</div>
+    <script>
+        const tg = window.Telegram.WebApp;
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    const tg = window.Telegram?.WebApp;
-    if (tg && tg.expand) tg.expand();
+        // Загружаем текст из URL параметра (?post=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const post = urlParams.get("post") || "";
+        document.getElementById("postInput").value = decodeURIComponent(post);
 
-    function getQueryParam(name) {
-      try {
-        return new URLSearchParams(window.location.search).get(name);
-      } catch (e) {
-        return null;
-      }
-    }
+        tg.expand();
 
-    // если пришёл текст в ?post=..., подставим его в textarea
-    const pre = getQueryParam('post');
-    if (pre) {
-      try {
-        document.getElementById('postText').value = decodeURIComponent(pre);
-      } catch (e) {
-        document.getElementById('postText').value = pre;
-      }
-    }
-
-    document.getElementById('saveBtn').addEventListener('click', function() {
-      const text = document.getElementById('postText').value.trim();
-      if (!text) { alert('Введіть текст!'); return; }
-      if (tg && tg.sendData) {
-        tg.sendData(text);   // отправляем текст в бот
-        try { tg.close(); } catch(e) {}
-      } else {
-        // Если не внутри Telegram, просто покажем текст (для теста в браузере)
-        alert("Текст (для теста):\n\n" + text);
-      }
-    });
-  </script>
+        document.getElementById("saveBtn").addEventListener("click", () => {
+            const text = document.getElementById("postInput").value;
+            tg.sendData(text);
+            tg.close();
+        });
+    </script>
 </body>
 </html>
+
 
 
 
